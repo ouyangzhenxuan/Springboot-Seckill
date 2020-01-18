@@ -39,6 +39,17 @@ public class ItemModel {
     @NotBlank(message = "Item image can't be blank")
     private String imgUrl;
 
+    // nested model, if promoModel is not null, means it still has promo activities haven't finished
+    private PromoModel promoModel;
+
+    public PromoModel getPromoModel() {
+        return promoModel;
+    }
+
+    public void setPromoModel(PromoModel promoModel) {
+        this.promoModel = promoModel;
+    }
+
     public Integer getId() {
         return id;
     }

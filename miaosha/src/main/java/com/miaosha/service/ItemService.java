@@ -26,4 +26,7 @@ public interface ItemService {
 
     // reduce stock
     boolean decreaseStock(Integer itemId, Integer amount) throws BusinessException;
+
+    // sales increase
+    void increaseSales(Integer itemId, Integer amount) throws BusinessException;
 }

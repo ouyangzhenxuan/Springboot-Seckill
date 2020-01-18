@@ -5,6 +5,7 @@ import com.miaosha.error.BusinessException;
 import com.miaosha.response.CommonRetuenType;
 import com.miaosha.service.ItemService;
 import com.miaosha.service.model.ItemModel;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -54,6 +55,7 @@ public class ItemController extends BaseController {
 
         ItemModel itemModel = itemService.getItemById(id);
 
+        // convert model to view object and return to front-end
         ItemVO itemVO = this.convertVOFromModel(itemModel);
 
         return CommonRetuenType.create(itemVO);
@@ -88,6 +90,16 @@ public class ItemController extends BaseController {
         }
         ItemVO itemVO = new ItemVO();
         BeanUtils.copyProperties(itemModel, itemVO);
+
+        if(itemModel.getPromoModel() != null){
+            // there is on going promotion
+            itemVO.setPromoStatus(itemModel.getPromoModel().getStatus());
+            itemVO.setPromoId(itemModel.getPromoModel().getId());
+            itemVO.setStartDate(itemModel.getPromoModel().getStartDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));
+            itemVO.setPromoPrice(itemModel.getPromoModel().getPromoItemPrice());
+        }else{
+            itemVO.setPromoStatus(0);
+        }
         return itemVO;
     }
 

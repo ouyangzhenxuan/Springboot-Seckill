@@ -20,14 +20,25 @@ public class OrderModel {
 
     private Integer itemId;
 
-    // unit price
+    // if it is not null, then the transaction is based on promo price
+    private Integer promoId;
+
+    // unit price, if promoId is not null, then it means promo price
     private BigDecimal itemPrice;
 
     // order amount
     private Integer amount;
 
-    // order total price
+    // order total price, if promoId is not null, then it means promo price
     private BigDecimal orderPrice;
+
+    public Integer getPromoId() {
+        return promoId;
+    }
+
+    public void setPromoId(Integer promoId) {
+        this.promoId = promoId;
+    }
 
     public String getId() {
         return id;

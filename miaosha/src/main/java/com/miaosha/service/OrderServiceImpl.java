@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderModel createOrder(Integer userId, Integer itemId, Integer amount) throws BusinessException {
+    public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount) throws BusinessException {
 
         // validate transaction state, check if the user or amount is validated
         ItemModel itemModel = itemService.getItemById(itemId);
@@ -61,6 +61,17 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "Amount isn't correct");
         }
 
+        // validate promotion info
+        if(promoId != null){
+            // check if the promotion match the item
+            if(promoId.intValue() != itemModel.getPromoModel().getId()){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "Promotion information not validated");
+            }else if(itemModel.getPromoModel().getStatus().intValue() != 2){
+                // check if the promotion is on going
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "Promotion hasn't started");
+            }
+        }
+
 
         // after order, reduce stock; after payment, reduce stock
         boolean result = itemService.decreaseStock(itemId, amount);
@@ -73,13 +84,22 @@ public class OrderServiceImpl implements OrderService {
         orderModel.setUserId(userId);
         orderModel.setItemId(itemId);
         orderModel.setAmount(amount);
-        orderModel.setItemPrice(itemModel.getPrice());
-        orderModel.setOrderPrice(itemModel.getPrice().multiply(new BigDecimal(amount)));
+        if(promoId != null){
+            orderModel.setItemPrice(itemModel.getPromoModel().getPromoItemPrice());
+        }else{
+            orderModel.setItemPrice(itemModel.getPrice());
+        }
+
+        orderModel.setOrderPrice(orderModel.getItemPrice().multiply(new BigDecimal(amount)));
+        orderModel.setPromoId(promoId);
 
         // generate transaction id
         orderModel.setId(generateOrderNo());
         OrderDO orderDO = this.convertFromOrderModel(orderModel);
         orderDOMapper.insertSelective(orderDO);
+
+        // increase item sales
+        itemService.increaseSales(itemId, amount);
 
         // return to front-end
 
