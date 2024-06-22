@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +41,7 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private PromoService promoService;
 
-    private ItemDO converItemDOFromItemModel(ItemModel itemModel){
+    private ItemDO convertItemDOFromItemModel(ItemModel itemModel){
         if(itemModel == null){
             return null;
         }
@@ -76,7 +75,7 @@ public class ItemServiceImpl implements ItemService {
         }
 
         // convert item model -> data object
-        ItemDO itemDO = this.converItemDOFromItemModel(itemModel);
+        ItemDO itemDO = this.convertItemDOFromItemModel(itemModel);
 
         // insert into database
         itemDOMapper.insertSelective(itemDO);
